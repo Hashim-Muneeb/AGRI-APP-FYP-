@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "366797589058",
+    "project_id": "agriappfyp",
+    "storage_bucket": "agriappfyp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:366797589058:android:850cad00bf65a2cf3a7bdb",
+        "android_client_info": {
+          "package_name": "com.agri_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqA1RN0QqbdjqA4vsaPCfKqlEcJiiBDEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,138 @@
+#include <ESP8266WiFi.h>
+#include <SoftwareSerial.h>
+#include <Firebase_ESP_Client.h>
+#include <addons/TokenHelper.h>
+
+// Define RS485 module pins
+#define RS485_A_PIN 18  // Yellow wire connected to A (DI)
+#define RS485_B_PIN 17  // Blue wire connected to B (RO)
+#define RS485_RE_PIN 19  // RE pin
+#define RS485_DE_PIN 21  // DE pin
+
+// Define WiFi credentials
+#define WIFI_SSID "HASHIM"
+#define WIFI_PASSWORD "876543210"
+
+// Define Firebase API Key, Project ID, and user credentials
+#define API_KEY "AIzaSyBqA1RN0QqbdjqA4vsaPCfKqlEcJiiBDEg"
+#define FIREBASE_PROJECT_ID "agriappfyp"
+#define USER_EMAIL "hashim12@gmail.com"
+#define USER_PASSWORD "hashim123"
+
+// Define Firebase Data object, Firebase authentication, and configuration
+FirebaseData fbdo;
+FirebaseAuth auth;
+FirebaseConfig config;
+
+// Initialize the software serial port for RS485
+SoftwareSerial rs485(RS485_A_PIN, RS485_B_PIN);
+
+void setup() {
+  // Initialize serial communication for debugging
+  Serial.begin(115200);
+
+  // Initialize RS485 communication
+  rs485.begin(9600);
+
+  // Set the RE and DE pins to output mode
+  pinMode(RS485_RE_PIN, OUTPUT);
+  pinMode(RS485_DE_PIN, OUTPUT);
+
+  // Set RE and DE to low for receiving mode
+  digitalWrite(RS485_RE_PIN, LOW);
+  digitalWrite(RS485_DE_PIN, LOW);
+
+  // Connect to Wi-Fi
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.print("Connecting to Wi-Fi");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(300);
+  }
+  Serial.println();
+  Serial.print("Connected with IP: ");
+  Serial.println(WiFi.localIP());
+  Serial.println();
+
+  // Print Firebase client version
+  Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
+
+  // Assign the API key
+  config.api_key = API_KEY;
+
+  // Assign the user sign-in credentials
+  auth.user.email = USER_EMAIL;
+  auth.user.password = USER_PASSWORD;
+
+  // Assign the callback function for the long-running token generation task
+  config.token_status_callback = tokenStatusCallback;  // see addons/TokenHelper.h
+
+  // Begin Firebase with configuration and authentication
+  Firebase.begin(&config, &auth);
+
+  // Reconnect to Wi-Fi if necessary
+  Firebase.reconnectWiFi(true);
+}
+
+void loop() {
+  // Request data from the NPK sensor
+  digitalWrite(RS485_RE_PIN, HIGH); // Set RE to high for transmitting mode
+  digitalWrite(RS485_DE_PIN, HIGH); // Set DE to high for transmitting mode
+
+  // Example command to request data from NPK sensor (modify as per your sensor's protocol)
+  byte requestCommand[] = {0x01, 0x03, 0x00, 0x00, 0x00, 0x06, 0xC5, 0xCB};
+  rs485.write(requestCommand, sizeof(requestCommand));
+
+  delay(100); // Wait for the response
+
+  digitalWrite(RS485_RE_PIN, LOW); // Set RE to low for receiving mode
+  digitalWrite(RS485_DE_PIN, LOW); // Set DE to low for receiving mode
+
+  // Read the response from the NPK sensor
+  if (rs485.available() >= 9) { // Ensure at least 9 bytes are available for a valid response
+    byte response[9];
+    rs485.readBytes(response, 9);
+
+    // Parse response to extract NPK values (example parsing, adjust based on your sensor's response format)
+    float nitrogen = (response[3] << 8) | response[4];
+    float phosphorus = (response[5] << 8) | response[6];
+    float potassium = (response[7] << 8) | response[8];
+
+    // Print NPK values (for debugging)
+    Serial.print("Nitrogen: ");
+    Serial.print(nitrogen);
+    Serial.println(" mg/kg");
+    Serial.print("Phosphorus: ");
+    Serial.print(phosphorus);
+    Serial.println(" mg/kg");
+    Serial.print("Potassium: ");
+    Serial.print(potassium);
+    Serial.println(" mg/kg");
+
+    // Create a FirebaseJson object for storing data
+    FirebaseJson content;
+
+    // Set the 'Nitrogen', 'Phosphorus', and 'Potassium' fields in the FirebaseJson object
+    content.set("Nitrogen", nitrogen);
+    content.set("Phosphorus", phosphorus);
+    content.set("Potassium", potassium);
+
+    Serial.print("Updating Firebase with NPK Data... ");
+
+    // Define the path to the Firestore document
+    String documentPath = "EsoData/NPKSensor";
+
+    // Use the patchDocument method to update the NPK Firestore document
+    if (Firebase.Firestore.patchDocument(&fbdo, FIREBASE_PROJECT_ID, "", documentPath.c_str(), content.raw(), "Nitrogen,Phosphorus,Potassium")) {
+      Serial.printf("Success! Document updated\n");
+    } else {
+      Serial.println("Failed to update Firebase.");
+      Serial.println(fbdo.errorReason());
+    }
+  } else {
+    Serial.println("Failed to read NPK sensor data.");
+  }
+
+  // Delay before the next reading
+  delay(10000); // Adjust delay as needed
+}
