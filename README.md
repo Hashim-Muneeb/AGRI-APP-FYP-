@@ -1,4 +1,17 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+This is FINAL YEAR PROJECT build using React Native, Firebase/Firestore and Sensor.
+
+# FUNCTIONAL REQUIRENMENTS OF PROJECT
+
+User Authentication and Management using Firebase/Firestore
+Real-time Land Monitoring using DHT11 Temperature and Humidity Sensor
+Rent Section 
+Fertilizer Needs Analysis using NPK sensor
+Water Needs Analysis using Soil Moisture Sensor
+Agricultural Loans and Insurance 
+Crop Information
+Machine Owner Equipment Management
+
+
 
 # Getting Started
 
