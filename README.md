@@ -2,14 +2,14 @@ This is FINAL YEAR PROJECT build using React Native, Firebase/Firestore and Sens
 
 # FUNCTIONAL REQUIRENMENTS OF PROJECT
 
-User Authentication and Management using Firebase/Firestore
-Real-time Land Monitoring using DHT11 Temperature and Humidity Sensor
-Rent Section 
-Fertilizer Needs Analysis using NPK sensor
-Water Needs Analysis using Soil Moisture Sensor
-Agricultural Loans and Insurance 
-Crop Information
-Machine Owner Equipment Management
+1. User Authentication and Management using Firebase/Firestore
+2. Real-time Land Monitoring using DHT11 Temperature and Humidity Sensor
+3. Rent Section 
+4. Fertilizer Needs Analysis using NPK sensor
+5. Water Needs Analysis using Soil Moisture Sensor
+6. Agricultural Loans and Insurance 
+7. Crop Information
+8. Machine Owner Equipment Management
 
 
 
@@ -45,15 +45,6 @@ npm run android
 yarn android
 ```
 
-### For iOS
-
-```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
 
 If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
 
@@ -66,8 +57,7 @@ Now that you have successfully run the app, let's modify it.
 1. Open `App.tsx` in your text editor of choice and edit some lines.
 2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
-
+  
 ## Congratulations! :tada:
 
 You've successfully run and modified your React Native App. :partying_face:
